@@ -1,0 +1,46 @@
+name: build Mi-Assistant
+
+on:
+  workflow_dispatch:
+
+env:
+  VERSION: 1.0.0
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: gcc -o miasst_linux64 main.c libs/*.c -Llibs/linux -lusb-1.0 -lcurl
+
+      - name: Upload Release Asset (Linux)
+        run: |
+          gh release upload ${{ env.VERSION }} ./miasst_linux64 --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+  windows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt-get install -y mingw-w64
+      - run: i686-w64-mingw32-gcc -o miasst_windows_32.exe main.c libs/*.c -Llibs/windows_32 -lusb-1.0 -lcurl
+      - run: x86_64-w64-mingw32-gcc -o miasst_windows_64.exe main.c libs/*.c -Llibs/windows_64 -lusb-1.0 -lcurl
+
+      - name: Upload Release Assets (Windows)
+        run: |
+          gh release upload ${{ env.VERSION }} ./miasst_windows_32.exe ./miasst_windows_64.exe --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: gcc -o miasst_macos64 main.c libs/*.c -Llibs/macos -lusb-1.0 -lcurl
+
+      - name: Upload Release Asset (macOS)
+        run: |
+          gh release upload ${{ env.VERSION }} ./miasst_macos64 --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
