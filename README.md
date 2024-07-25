@@ -15,7 +15,7 @@ in Mi-Assistant mode, without unlocking bootloader:
 - Format-Data
 - Check-ROM-Compatibility(With MD5)
 
-Download for:
+# Download:
 
 - [Windows, Linux, macOS](https://github.com/offici5l/MiAssistantTool/releases/tag/1.0.0)
 
