@@ -19,7 +19,7 @@ in Mi-Assistant mode, without unlocking bootloader:
 
 - [Windows, Linux, macOS](https://github.com/offici5l/MiAssistantTool/releases/tag/1.0.0)
 
-If you need a version for another system Android(termux) or other... , you can build it yourself by cloning the repository and compiling it using GCC.
+If you need a version for another system Android(termux) or other... , you can build it by cloning the repository and compiling it using GCC.
 
 ## Changelog :
 
