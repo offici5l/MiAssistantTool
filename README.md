@@ -9,11 +9,12 @@
 in Mi-Assistant mode, without unlocking bootloader:
 
 - Read-Info
-
 - Flash-Official-Recovery-ROM
-
 - Format-Data
-
 - Check-ROM-Compatibility(With MD5)
 
+Download for:
 
+- [Windows, Linux, macOS](https://github.com/offici5l/MiAssistantTool/releases/tag/1.0.0)
+
+If you need a version for another system, you can build it yourself by cloning the repository and compiling it using GCC.
