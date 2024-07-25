@@ -15,13 +15,13 @@ in Mi-Assistant mode, without unlocking bootloader:
 - Format-Data
 - Check-ROM-Compatibility(With MD5)
 
-# Download:
+## Download:
 
 - [Windows, Linux, macOS](https://github.com/offici5l/MiAssistantTool/releases/tag/1.0.0)
 
 If you need a version for another system Android(termux) or other... , you can build it yourself by cloning the repository and compiling it using GCC.
 
-# Changelog :
+## Changelog :
 
 version 1.0.0
 - Read-Info
