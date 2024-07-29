@@ -29,7 +29,9 @@ jobs:
 
       - name: Upload Release Assets (Windows)
         run: |
-          gh release upload ${{ env.VERSION }} ./miasst_windows_32.exe ./miasst_windows_64.exe --clobber
+          zip -r miasst_windows_32.zip ./libs/windows_32/libcurl.dll ./miasst_windows_32.exe
+          zip -r miasst_windows_64.zip ./libs/windows_64/libcurl-x64.dll ./miasst_windows_64.exe
+          gh release upload ${{ env.VERSION }} ./miasst_windows_32.zip ./miasst_windows_64.zip --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
