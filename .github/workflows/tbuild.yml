@@ -17,5 +17,10 @@ jobs:
 
     - name: Compile main.c
       run: |
-        $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl
-
+        $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/clang \
+          --target=aarch64-linux-android21 \
+          -o miasst main.c libs/*.c \
+          -Llibs/termux_aarch64 -lusb-1.0 -lcurl \
+          -I$ANDROID_NDK_HOME/sources/android/support/include \
+          -I$ANDROID_NDK_HOME/sources/cxx-stl/gnu-libstdc++/4.9/include \
+          -I$ANDROID_NDK_HOME/sources/cxx-stl/gnu-libstdc++/4.9/libs/aarch64-linux-android/include
