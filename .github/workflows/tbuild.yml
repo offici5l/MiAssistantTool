@@ -1,0 +1,21 @@
+name: Build main.c with Android NDK
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Android NDK
+      uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r26d
+
+    - name: Compile main.c
+      run: |
+        $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl
+
