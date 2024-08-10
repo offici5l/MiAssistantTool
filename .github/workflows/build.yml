@@ -6,6 +6,8 @@ on:
 env:
   VERSION: 1.0.0
 
+# for termux aarch64 : gcc -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl
+
 jobs:
   linux:
     runs-on: ubuntu-latest
