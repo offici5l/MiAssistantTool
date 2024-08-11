@@ -12,7 +12,7 @@ jobs:
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r21e  # أو أي إصدار تريده
+          ndk-version: r21e
 
       - run: |
-          echo "Clang path: ${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang"
+          /opt/hostedtoolcache/ndk/r21e/x64/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl -Wl,-rpath=/data/data/com.termux/files/usr/lib/
