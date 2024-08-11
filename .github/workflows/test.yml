@@ -1,9 +1,9 @@
-name: Display Clang Path
+name: Build with Clang
 
 on: [push]
 
 jobs:
-  display-path:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,4 +15,7 @@ jobs:
           ndk-version: r21e
 
       - run: |
-          /opt/hostedtoolcache/ndk/r21e/x64/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl -Wl,-rpath=/data/data/com.termux/files/usr/lib/
+          ls
+          CLANG_PATH=${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin
+          $CLANG_PATH/aarch64-linux-android33-clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl -Wl,-rpath=/data/data/com.termux/files/usr/lib/
+          ls
