@@ -2,12 +2,23 @@ name: Build with Clang
 
 on: [push]
 
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Find aarch64-linux-android30-clang
+        run: |
+          TOOLCHAIN_PATH=$(find /toolchains -name aarch64-linux-android30-clang -type f 2>/dev/null)
+
+          if [ -z "$TOOLCHAIN_PATH" ]; then
+              echo "aarch64-linux-android30-clang not found"
+          else
+              echo "Found aarch64-linux-android30-clang at $TOOLCHAIN_PATH"
+          fi
 
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
