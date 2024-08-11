@@ -19,4 +19,4 @@ jobs:
           echo "Clang path: $CLANG_PATH"
           ls $CLANG_PATH
           find $CLANG_PATH -name '*clang*'
-          $CLANG_PATH/aarch64-linux-android33-clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl -Wl,-rpath=/data/data/com.termux/files/usr/lib/
+          $CLANG_PATH/aarch64-linux-android30-clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl -Wl,-rpath=/data/data/com.termux/files/usr/lib/
