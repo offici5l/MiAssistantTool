@@ -12,8 +12,14 @@ jobs:
 
       - name: Find aarch64-linux-android30-clang
         run: |
-          TOOLCHAIN_PATH=$(find /toolchains -name aarch64-linux-android30-clang -type f 2>/dev/null)
+          echo "Starting search for aarch64-linux-android30-clang"
+          
+          TOOLCHAIN_PATH=$(find / -name aarch64-linux-android30-clang -type f 2>/dev/null)
+          
+          echo "Search completed"
+          echo "TOOLCHAIN_PATH: $TOOLCHAIN_PATH"
 
+      
           if [ -z "$TOOLCHAIN_PATH" ]; then
               echo "aarch64-linux-android30-clang not found"
           else
