@@ -1,0 +1,18 @@
+name: Display Clang Path
+
+on: [push]
+
+jobs:
+  display-path:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r21e  # أو أي إصدار تريده
+
+      - run: |
+          echo "Clang path: ${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang"
