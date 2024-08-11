@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: /usr/local/lib/android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang -o miasst_termux_aarch64 main.c libs/*.c -Llibs/termux_aarch64 -Wl,-rpath=/data/data/com.termux/files/usr/lib/ -Wl,-rpath-link=libs/termux_aarch64 -lusb-1.0 -lcurl -I/data/data/com.termux/files/home/test/data/data/com.termux/files/usr/lib/clang/18/include/llvm_libc_wrappers/
+      - run: /usr/local/lib/android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang -o miasst_termux_aarch64 main.c libs/*.c -Llibs/termux_aarch64 -Wl,-rpath=/data/data/com.termux/files/usr/lib/ -Wl,-rpath-link=libs/termux_aarch64 -lusb-1.0 -lcurl
 
       - name: Upload Release Asset (termux aarch64)
         run: |
