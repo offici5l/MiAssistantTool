@@ -49,4 +49,4 @@ jobs:
 
 
 # for termux aarch64 : 
-# gcc -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl
+# clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl
