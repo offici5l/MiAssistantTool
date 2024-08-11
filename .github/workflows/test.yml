@@ -15,8 +15,6 @@ jobs:
           ndk-version: r21e
 
       - run: |
+          ls
           CLANG_PATH=${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin
-          echo "Clang path: $CLANG_PATH"
-          ls $CLANG_PATH
-          find $CLANG_PATH -name '*clang*'
           $CLANG_PATH/aarch64-linux-android30-clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl -Wl,-rpath=/data/data/com.termux/files/usr/lib/
