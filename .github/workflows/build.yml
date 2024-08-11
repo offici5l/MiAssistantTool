@@ -50,3 +50,6 @@ jobs:
 
 # for termux aarch64 : 
 # clang -o miasst main.c libs/*.c -Llibs/termux_aarch64 -lusb-1.0 -lcurl
+
+# for termux arm : 
+# clang -o miasst main.c libs/*.c -Llibs/termux_arm -lusb-1.0 -lcurl
