@@ -4,7 +4,7 @@
 
 It is compatible with all platforms.
 
-[![Version 1.0.0](https://img.shields.io/badge/Version-1.0.0-brightgreen)](#)
+[![Version 1.1](https://img.shields.io/badge/Version-1.1-brightgreen)](#)
 
 </div>
 
@@ -17,7 +17,7 @@ in Mi-Assistant mode, without unlocking bootloader:
 
 ## Download:
 
-- [Windows, Linux, macOS, termux](https://github.com/offici5l/MiAssistantTool/releases/tag/1.0.0)
+- [Windows, Linux, macOS, termux](https://github.com/offici5l/MiAssistantTool/releases/tag/1.1)
 
 If you need a version for another system ... , you can build it by cloning the repository and compiling it using GCC.
 
@@ -28,3 +28,9 @@ version 1.0.0
 - Flash-Official-Recovery-ROM
 - Format-Data
 - Check-ROM-Compatibility(With MD5)
+
+version 1.1
+- reboot (to system)
+- Reduce code size 
+- Display the list of options before connecting the device
+- Many fixes and improvements ...
