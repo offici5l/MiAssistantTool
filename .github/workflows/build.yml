@@ -27,12 +27,12 @@ jobs:
       - run: i686-w64-mingw32-gcc -o miasst_windows_32.exe main.c libs/*.c -Llibs/windows_32 -lusb-1.0 -lcurl
       - run: x86_64-w64-mingw32-gcc -o miasst_windows_64.exe main.c libs/*.c -Llibs/windows_64 -lusb-1.0 -lcurl
 
+
+
       - name: Upload Release Assets (Windows)
         run: |
-          cp ./libs/windows_32/libcurl.dll .
-          zip -r miasst_windows_32.zip libcurl.dll miasst_windows_32.exe
-          cp ./libs/windows_64/libcurl-x64.dll .
-          zip -r miasst_windows_64.zip libcurl-x64.dll miasst_windows_64.exe
+          zip -j miasst_windows_32.zip ./libs/windows_32/libcurl.dll ./libs/windows_32/libusb-1.0.dll miasst_windows_32.exe
+          zip -j miasst_windows_64.zip ./libs/windows_64/libcurl-x64.dll ./libs/windows_64/libusb-1.0.dll miasst_windows_64.exe
           gh release upload ${{ env.VERSION }} ./miasst_windows_32.zip ./miasst_windows_64.zip --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
