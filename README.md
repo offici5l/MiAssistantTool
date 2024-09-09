@@ -23,4 +23,10 @@ If you need a version for another system ... , you can build it by cloning the r
 
 ___
 
-**[Changelog](https://github.com/offici5l/MiAssistantTool/blob/main/CHANGELOG.md)**
+</div>
+
+<p align="center">
+    <a href="https://github.com/offici5l/MiAssistantTool/blob/main/CHANGELOG.md">CHANGELOG</a> |
+    <a href="https://github.com/offici5l/MiAssistantTool/blob/main/LICENSE">LICENSE</a> |
+    <a href="https://github.com/offici5l/MiAssistantTool/blob/main/INSPIRATION.md">INSPIRATION</a>
+</p>
