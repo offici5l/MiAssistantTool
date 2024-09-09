@@ -6,7 +6,9 @@ It is compatible with all platforms.
 
 [![Version 1.1](https://img.shields.io/badge/Version-1.1-brightgreen)](#)
 
+<p align="center">
     <a href="https://github.com/offici5l/MiAssistantTool/blob/main/CHANGELOG.md">CHANGELOG</a> |
+</p>
 
 </div>
 
