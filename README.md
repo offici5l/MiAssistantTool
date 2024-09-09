@@ -21,4 +21,6 @@ in Mi-Assistant mode, without unlocking bootloader:
 
 If you need a version for another system ... , you can build it by cloning the repository and compiling it using GCC.
 
-### [Changelog](https://github.com/offici5l/MiAssistantTool/blob/main/CHANGELOG.md)
+___
+
+**[Changelog](https://github.com/offici5l/MiAssistantTool/blob/main/CHANGELOG.md)**
