@@ -21,16 +21,4 @@ in Mi-Assistant mode, without unlocking bootloader:
 
 If you need a version for another system ... , you can build it by cloning the repository and compiling it using GCC.
 
-## Changelog :
-
-version 1.0.0
-- Read-Info
-- Flash-Official-Recovery-ROM
-- Format-Data
-- Check-ROM-Compatibility(With MD5)
-
-version 1.1
-- reboot (to system)
-- Reduce code size 
-- Display the list of options before connecting the device
-- Many fixes and improvements ...
+## [Changelog](https://github.com/offici5l/MiAssistantTool/blob/main/CHANGELOG.md)
