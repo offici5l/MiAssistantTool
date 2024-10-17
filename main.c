@@ -34,7 +34,8 @@ int getUserChoice() {
     char choice_str[10];
     FILE *file;
 
-    if (fopen("choi.tmp", "r") != NULL) {
+    if ((file = fopen("choi.tmp", "r")) != NULL) {
+        fclose(file);
         return 0;
     }
 
@@ -52,7 +53,15 @@ int getUserChoice() {
 
     sprintf(choice_str, "%d", choice);
     file = fopen("choi.tmp", "w");
-    fprintf(file, "%s", choice_str);
+    if (!file) {
+        perror("Error opening file");
+        return 1;
+    }
+    if (fprintf(file, "%s", choice_str) < 0) {
+        perror("Error writing to file");
+        fclose(file);
+        return 1;
+    }
     fclose(file);
     return 0;
 }
@@ -119,19 +128,49 @@ int check_device(libusb_device *dev) {
 
 int scan_for_device() {
     getUserChoice();
+    
     int r = libusb_init(&ctx);
-    if (r != LIBUSB_SUCCESS) return 1;
+    if (r != LIBUSB_SUCCESS) {
+        fprintf(stderr, "libusb_init failed: %s\n", libusb_strerror(r));
+        return 1;
+    }
+
     libusb_device **devs = NULL;
     ssize_t cnt = libusb_get_device_list(ctx, &devs);
-    if (cnt < 0) return 1;
+    if (cnt < 0) {
+        fprintf(stderr, "libusb_get_device_list failed: %s\n", libusb_strerror(cnt));
+        libusb_exit(ctx);
+        return 1;
+    }
+
     int i = 0;
     libusb_device *dev = NULL;
     while ((dev = devs[i++]) != NULL && check_device(dev) != 0);
+    
     if (dev) {
-        r = libusb_open(dev, &dev_handle) || libusb_claim_interface(dev_handle, interface_num);
+        r = libusb_open(dev, &dev_handle);
+        if (r != LIBUSB_SUCCESS) {
+            fprintf(stderr, "libusb_open failed: %s\n", libusb_strerror(r));
+            libusb_free_device_list(devs, 1);
+            libusb_exit(ctx);
+            return 1;
+        }
+        
+        r = libusb_claim_interface(dev_handle, interface_num);
+        if (r != LIBUSB_SUCCESS) {
+            fprintf(stderr, "libusb_claim_interface failed: %s\n", libusb_strerror(r));
+            libusb_free_device_list(devs, 1);
+            libusb_close(dev_handle);
+            libusb_exit(ctx);
+            return 1;
+        }
+
         libusb_free_device_list(devs, 1);
-        return r == LIBUSB_SUCCESS ? 0 : 1;
+        return 0; // Success
     } else {
+        fprintf(stderr, "No device found or device check failed.\n");
+        libusb_free_device_list(devs, 1);
+        libusb_exit(ctx);
         return 1;
     }
 }
@@ -484,7 +523,8 @@ int start_sideload(const char *sideload_file, const char *validate) {
     
 
 int connect_device_read_info() {
-    if(send_command(0x4E584E43, 0x01000001, 1024 * 1024, "host::\x0", 7)) {
+    if (send_command(0x4E584E43, 0x01000001, 1024 * 1024, "host::\x0", 7)) {
+        fprintf(stderr, "Failed to send command.\n");
         return 1;
     }
 
@@ -492,23 +532,27 @@ int connect_device_read_info() {
     int buf_len;
     adb_usb_packet pkt;
     int try_count = 10;
+
     while (try_count > 0) {
-        if(recv_packet(&pkt, buf, &buf_len)) {
+        if (recv_packet(&pkt, buf, &buf_len)) {
+            fprintf(stderr, "Failed to receive packet.\n");
             return 1;
         }
-        if(pkt.cmd == 0x4E584E43) break;
+        if (pkt.cmd == 0x4E584E43) break;
         try_count--;
     }
 
-    if(try_count == 0) {
-        printf("Device doesn't send correct response\n");
+    if (try_count == 0) {
+        fprintf(stderr, "Device doesn't send correct response\n");
         return 1;
     }
 
     buf[buf_len] = 0;
-    if(memcmp(buf, "sideload::", 10)){
+    if (memcmp(buf, "sideload::", 10)) {
+        fprintf(stderr, "Received unexpected response: %s\n", buf);
         return 1;
     }
+
     return 0;
 }
 
