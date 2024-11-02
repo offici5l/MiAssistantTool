@@ -1,0 +1,32 @@
+name: Build Mi-Assistant
+
+on:
+  workflow_dispatch:
+
+env:
+  VERSION: 1.1
+
+jobs:
+
+  build_termux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [aarch64, arm, i686, x86_64]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build miasst_termux
+        run: |
+          if [[ "${{ matrix.architecture }}" == "aarch64" || "${{ matrix.architecture }}" == "arm" ]]; then
+            docker run --privileged aptman/qus -s -- -p aarch64 arm
+          fi
+          docker run --name ${{ matrix.architecture }} --privileged \
+            -v $(pwd)/main.c:/data/data/com.termux/files/home/main.c \
+            -v $(pwd)/libs:/data/data/com.termux/files/home/libs \
+            termux/termux-docker:${{ matrix.architecture }} bash -c "pkg install libc++ && yes | pkg install clang && yes | pkg install libusb && clang -o miasst_termux_${{ matrix.architecture }} main.c libs/*.c -lusb-1.0 -lcurl"
+          docker cp ${{ matrix.architecture }}:/data/data/com.termux/files/home/miasst_termux_${{ matrix.architecture }} ./
+      - name: Upload Release Assets (Termux)
+        run: |
+          gh release upload ${{ env.VERSION }} ./miasst_termux_${{ matrix.architecture }} --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
