@@ -1,72 +1,102 @@
-name: build Mi-Assistant
+name: Build miasst
 
 on:
+  push:
+    paths:
+      - miasst.c
+  pull_request:
+    paths:
+      - miasst.c
   workflow_dispatch:
 
 env:
-  VERSION: 1.1
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  linux:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - run: gcc -o miasst_linux64 main.c libs/*.c -Llibs/linux -lusb-1.0 -lcurl
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Upload Release Asset (Linux)
-        run: |
-          gh release upload ${{ env.VERSION }} ./miasst_linux64 --clobber
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+    - name: Tag & Release
+      run: |
+        VERSION=$(grep -oP '#define VERSION "\K[^"]+' miasst.c)
+        if ! git ls-remote --tags origin | grep -q "$VERSION"; then
+          git tag "$VERSION"
+          git push origin "$VERSION"
+        else
+          echo "Tag $VERSION already exists, skipping tag creation."
+        fi
+        if ! gh release view $VERSION; then
+          gh release create $VERSION --title "Release $VERSION"
+        else
+          echo "Release $VERSION already exists, skipping release creation."
+        fi
+        
 
-  windows:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: sudo apt-get install -y mingw-w64
-      - run: i686-w64-mingw32-gcc -o miasst_windows_32.exe main.c libs/*.c -Llibs/windows_32 -lusb-1.0 -lcurl
-      - run: x86_64-w64-mingw32-gcc -o miasst_windows_64.exe main.c libs/*.c -Llibs/windows_64 -lusb-1.0 -lcurl
+    - name: Install Dependencies
+      run: |
+        docker run --privileged aptman/qus -s -- -p aarch64 arm
+        sudo apt-get install -y mingw-w64 libusb-1.0-0-dev libssl-dev libcurl4-openssl-dev
+        git clone https://github.com/rafagafe/tiny-json.git
+        curl -L -o openssl.zip https://download.firedaemon.com/FireDaemon-OpenSSL/openssl-3.4.0.zip && 7z x openssl.zip -o./openssl && rm openssl.zip
+        curl -L -o libusb.7z https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.7z && 7z x libusb.7z -o./libusb && rm libusb.7z
+        curl -L -o curl32.zip https://curl.se/windows/dl-8.11.0_1/curl-8.11.0_1-win32-mingw.zip && 7z x curl32.zip -o./curl && rm curl32.zip && mv curl/curl-8.11.0_1-win32-mingw curl/win32
+        curl -L -o curl64.zip https://curl.se/windows/dl-8.11.0_1/curl-8.11.0_1-win64-mingw.zip && 7z x curl64.zip -o./curl && rm curl64.zip && mv curl/curl-8.11.0_1-win64-mingw curl/win64
 
+    - name: Build for Windows
+      run: |
+        for arch in i686 x86_64; do
+          suffix=""
+          if [ "$arch" == "i686" ]; then
+            suffix="32"
+            op="x86"
+          elif [ "$arch" == "x86_64" ]; then
+            suffix="64"
+            op="x64"
+          fi
 
+          $arch-w64-mingw32-gcc -o miasst_windows${suffix}.exe miasst.c tiny-json/tiny-json.c \
+            -I./libusb/include -I./openssl/${op}/include -I./curl/win${suffix}/include -I./tiny-json \
+            -L./libusb/MinGW${suffix}/static -L./openssl/${op}/lib -L./curl/win${suffix}/lib \
+            -lusb-1.0 -lssl -lcrypto -lcurl
+        done
 
-      - name: Upload Release Assets (Windows)
-        run: |
-          zip -j miasst_windows_32.zip ./libs/windows_32/libcurl.dll ./libs/windows_32/libusb-1.0.dll miasst_windows_32.exe
-          zip -j miasst_windows_64.zip ./libs/windows_64/libcurl-x64.dll ./libs/windows_64/libusb-1.0.dll miasst_windows_64.exe
-          gh release upload ${{ env.VERSION }} ./miasst_windows_32.zip ./miasst_windows_64.zip --clobber
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+    - name: Build miasst for Termux
+      run: |
+        for arch in arm aarch64; do
+          docker run --name $arch --privileged \
+            -v $(pwd)/miasst.c:/data/data/com.termux/files/home/miasst.c \
+            -v $(pwd)/tiny-json:/data/data/com.termux/files/home/tiny-json \
+            termux/termux-docker:$arch bash -c "yes | pkg install clang && yes | pkg install libusb && yes | pkg install libc++ && clang -o miasst_termux_$arch miasst.c tiny-json/tiny-json.c -I/usr/include/openssl -I. -lssl -lcrypto -lcurl -lusb-1.0"
+          docker cp $arch:/data/data/com.termux/files/home/miasst_termux_$arch ./
+        done
 
+    - name: Build for Ubuntu
+      run: |
+        gcc -o miasst_ubuntu miasst.c tiny-json/tiny-json.c \
+          -I/usr/include/openssl -I. -lssl -lcrypto -lcurl -lusb-1.0
 
-  macos:
+    - name: Upload
+      run: |
+        VERSION=$(grep -oP '#define VERSION "\K[^"]+' miasst.c)
+        gh release upload $VERSION ./miasst_windows32.exe ./miasst_windows64.exe ./miasst_ubuntu ./miasst_termux_aarch64 ./miasst_termux_arm --clobber
+
+  build-macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: gcc -o miasst_macos64 main.c libs/*.c -Llibs/macos -lusb-1.0 -lcurl
+    - uses: actions/checkout@v4
+    - run: |
+        brew install libusb openssl curl
+        git clone https://github.com/rafagafe/tiny-json.git
 
-      - name: Upload Release Asset (macOS)
-        run: |
-          gh release upload ${{ env.VERSION }} ./miasst_macos64 --clobber
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+    - name: Build miasst for macOS
+      run: |
+        clang -o miasst_macos miasst.c tiny-json/tiny-json.c -I/System/Volumes/Data/opt/homebrew/Cellar/libusb/1.0.27/include -I/System/Volumes/Data/opt/homebrew/opt/openssl/include -L/System/Volumes/Data/opt/homebrew/Cellar/libusb/1.0.27/lib -L/System/Volumes/Data/opt/homebrew/opt/openssl/lib -I. -lssl -lcrypto -lcurl -lusb-1.0
 
-
-  termux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - run: /usr/local/lib/android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang -o miasst_termux_aarch64 main.c libs/*.c -Llibs/termux_aarch64 -Wl,-rpath=/data/data/com.termux/files/usr/lib/ -lusb-1.0 -lcurl
-
-      - run: /usr/local/lib/android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi30-clang -o miasst_termux_arm main.c libs/*.c -Llibs/termux_arm -Wl,-rpath=/data/data/com.termux/files/usr/lib/ -lusb-1.0 -lcurl
-
-      - name: Upload Release Assets (termux)
-        run: |
-          gh release upload ${{ env.VERSION }} ./miasst_termux_arm ./miasst_termux_aarch64 --clobber
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-
-
-
-
+    - name: Upload macOS Build
+      run: |
+        VERSION=$(awk -F'"' '/#define VERSION/ {print $2}' miasst.c)
+        gh release upload $VERSION ./miasst_macos --clobber
