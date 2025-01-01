@@ -19,6 +19,6 @@ in Mi-Assistant mode, without unlocking bootloader:
 
 ___
 
-### [Download ](https://github.com/offici5l/MiUnlockTool/releases/latest/download)
+### [Download ](https://github.com/offici5l/MiAssistantTool/releases/latest)
 
 If you need a version for another system ... , you can build it by cloning the repository and compiling it using GCC
